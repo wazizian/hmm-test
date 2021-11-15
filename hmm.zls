@@ -1,0 +1,19 @@
+open Probzelus
+open Distribution
+open Infer_ds_streaming
+open Zelus_io
+
+let proba hmm y = pair (sigma2, x) where
+    rec init sigma = sample (gaussian (const 0.0, 2.0))
+    and sigma2 = mult (sigma, sigma)
+    and x = sample (gaussian ((const 0.0 fby x), 1.0))
+    and () = observe (gaussian (x, eval sigma2), y)
+
+let node main () = () where
+    rec (sigma2_obs, y_obs), _ = gen hmm 0.0
+    and d_sigma2, d_x = split(infer 10000 hmm y_obs)
+    and m_sigma2 = mean_float d_sigma2
+    and m_x  = mean_float d_x
+    and () = 
+        Format.printf "y_obs: %f >> m_x: %f\t sigma2_obs: %f >> m_sigma2: %f@."
+        <| y_obs <| m_x <| sigma2_obs <| m_sigma2 

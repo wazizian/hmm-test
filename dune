@@ -1,0 +1,11 @@
+(env (dev (flags (:standard -warn-error -A -w -a))))
+
+(rule
+ (targets hmm.ml hmm_main.ml)
+ (deps (:zl hmm.zls))
+ (action (run probzeluc -I `zeluc -where`-io -s main -o hmm_main %{zl})))
+
+(executables
+  (names hmm_main)
+  (libraries probzelus graphics zelus-io)
+  (promote (until-clean)))
